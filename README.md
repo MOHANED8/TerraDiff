@@ -1,23 +1,25 @@
-# 🛰️ Satellite Image Change Detection
+# 🛰️ TerraDiff: Satellite Image Change Detection
 
-![App Banner](images/banner.png)
+<p align="center">
+  <img src="images/banner.png" alt="App Banner" width="80%" />
+</p>
 
-A professional, modern web application for comparing satellite images taken at different time intervals and detecting significant changes—such as new structures, natural events, or land use changes. The app features a beautiful, animated interface and provides clear, actionable visualizations of detected differences.
+**TerraDiff** is a cutting-edge web application for detecting and visualizing changes in satellite imagery over time. Effortlessly monitor structural, environmental, and geographical transformations with precision and style.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-- **Upload** two satellite images (before/after) via drag-and-drop or file picker
-- **Automatic alignment** and resizing for robust comparison
-- **Change detection** using classical (OpenCV) or deep learning (U-Net) methods
-- **Animated, modern UI** with dark/light mode, progress spinners, and smooth transitions
-- **Side-by-side comparison slider** for intuitive before/after analysis
-- **Results gallery** with download and batch download options
-- **Threshold slider** for sensitivity adjustment
-- **Accessible and responsive** on all devices
-- **One-click data cleanup**
-- **In-app help modal** and professional documentation
+- 🚀 **Effortless Upload:** Drag & drop or select two satellite images (before/after) for instant analysis.
+- 🧠 **Smart Alignment:** Automatic image alignment and resizing for robust, accurate comparison.
+- 🔍 **Change Detection:** Choose between classical (OpenCV) or deep learning (U-Net) methods.
+- 🎨 **Modern UI:** Beautiful, animated interface with dark/light mode, progress spinners, and smooth transitions.
+- 🖼️ **Intuitive Comparison:** Side-by-side slider for seamless before/after analysis.
+- 🗂️ **Results Gallery:** All results saved with timestamps; download individually or in batch.
+- 🎚️ **Threshold Control:** Fine-tune detection sensitivity with an interactive slider.
+- 📱 **Responsive & Accessible:** Works perfectly on all devices, with ARIA labels and tooltips.
+- 🧹 **One-Click Cleanup:** Instantly clear uploads and results.
+- 🆘 **In-App Help:** Built-in help modal and comprehensive documentation.
 
 ---
 
@@ -37,48 +39,46 @@ A professional, modern web application for comparing satellite images taken at d
    ```bash
    python app.py
    ```
-5. **Open your browser at:**
+5. **Open your browser at:**  
    [http://localhost:5000](http://localhost:5000)
 
 ---
 
-## 🖼️ How It Works (Visual Guide)
+## 🖼️ Visual Workflow
 
 ### 1. Upload Images
-![Upload Animation](images/upload.gif)
-- Drag and drop or select two satellite images (same area, different times).
+<p align="center"><img src="images/upload.gif" alt="Upload Animation" width="60%"></p>
+*Drag and drop or select two satellite images (same area, different times).*
 
 ### 2. Adjust Sensitivity & Compare
-![Threshold Animation](images/threshold.gif)
-- Use the threshold slider to adjust detection sensitivity.
-- Click **Compare**. Enjoy the animated progress bar and spinner.
+<p align="center"><img src="images/threshold.gif" alt="Threshold Animation" width="60%"></p>
+*Use the threshold slider to adjust detection sensitivity. Click **Compare** and watch the magic happen!*
 
 ### 3. View Results & Use the Slider
-![Comparison Slider](images/slider.gif)
-- Instantly see detected changes overlaid on your images.
-- Use the before/after slider for intuitive comparison.
+<p align="center"><img src="images/slider.gif" alt="Comparison Slider" width="60%"></p>
+*Instantly see detected changes overlaid on your images. Use the before/after slider for intuitive comparison.*
 
 ### 4. Explore the Gallery & Download
-![Gallery Animation](images/gallery.gif)
-- All results are saved in a gallery with timestamps.
-- Download individual or all results with one click.
+<p align="center"><img src="images/gallery.gif" alt="Gallery Animation" width="60%"></p>
+*All results are saved in a gallery with timestamps. Download individual or all results with one click.*
 
 ### 5. Clean Up
-![Delete Animation](images/delete.gif)
-- Use the **Delete All Data** button to clear uploads and results.
+<p align="center"><img src="images/delete.gif" alt="Delete Animation" width="60%"></p>
+*Use the **Delete All Data** button to clear uploads and results.*
 
 ---
 
-## 🧠 Method & Approach
+## 🧠 How It Works
 
-- **Image Alignment:** Feature-based (ORB) alignment and automatic resizing
-- **Classical Detection:** Thresholded absolute difference and contour filtering
-- **Deep Learning:** U-Net model for semantic change detection (optional, user-provided weights)
-- **Visualization:** Overlay of detected changes, animated comparison slider, and gallery
+- **Image Alignment:** Feature-based (ORB) alignment and automatic resizing.
+- **Classical Detection:** Thresholded absolute difference and contour filtering.
+- **Deep Learning:** U-Net model for semantic change detection (optional, user-provided weights).
+- **Visualization:** Overlay of detected changes, animated comparison slider, and gallery.
 
 ---
 
 ## 📚 Documentation & Help
+
 - Click the **?** button in the app for a quick “How it works” guide.
 - All interactive elements have tooltips and ARIA labels for accessibility.
 - For advanced usage, see code comments and the `utils.py` file.
@@ -86,9 +86,10 @@ A professional, modern web application for comparing satellite images taken at d
 ---
 
 ## 🛠️ Customization
-- To use your own deep learning model, update `utils.py` and place weights at `unet_weights.pth`.
-- To support more formats, extend `read_image` in `utils.py`.
-- For advanced geospatial alignment, integrate with GDAL or rasterio.
+
+- **Custom Models:** Update `utils.py` and place your weights at `unet_weights.pth`.
+- **Format Support:** Extend `read_image` in `utils.py` for more formats.
+- **Advanced Alignment:** Integrate with GDAL or rasterio for geospatial alignment.
 
 ---
 
@@ -101,6 +102,7 @@ A professional, modern web application for comparing satellite images taken at d
 ---
 
 ## 👩‍💻 Authors & Credits
+
 - Designed and developed by [Your Name/Team]
 - UI icons by [Icons8](https://icons8.com/)
 - Animations by [LottieFiles](https://lottiefiles.com/) (if used)
@@ -108,8 +110,17 @@ A professional, modern web application for comparing satellite images taken at d
 ---
 
 ## 📄 License
+
 MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-> **Tip:** Replace the images and GIFs in the `images/` folder with your own screenshots and screen recordings for a fully branded, professional README! 
+> **Pro Tip:** Replace the images and GIFs in the `images/` folder with your own screenshots and screen recordings for a fully branded, professional README!
+
+---
+
+**Suggestions for further improvement:**
+- Add a live demo link or video walkthrough.
+- Include badges (build, license, stars, etc.) at the top.
+- Add a FAQ or Troubleshooting section if your users might need it.
+- Use more icons/emojis for visual appeal (but keep it professional). 
