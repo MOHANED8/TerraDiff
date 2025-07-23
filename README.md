@@ -97,7 +97,7 @@
 
 | Upload & Compare | Animated Slider | Results Gallery |
 |------------------|----------------|-----------------|
-| ![upload](images/upload.png) | ![slider](images/slider.png) | ![gallery](images/gallery.png) |
+| ![upload](<img width="467" height="358" alt="Image" src="https://github.com/user-attachments/assets/7f14276e-0a05-4411-b2df-217a5996bb72" />) | ![slider](<img width="410" height="502" alt="Image" src="https://github.com/user-attachments/assets/8f3e8f28-bb79-4cd3-9ed6-755891740c62" />) | ![gallery](<img width="410" height="502" alt="Image" src="https://github.com/user-attachments/assets/925a2256-578e-429e-9efd-77a889719dd0" />) |
 
 ---
 
