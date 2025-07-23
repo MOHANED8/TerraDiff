@@ -1,7 +1,7 @@
 # 🛰️ TerraDiff: Satellite Image Change Detection
 
 <p align="center">
-  <img src="images/banner.png" alt="App Banner" width="80%" />
+  <img width="1464" height="728" alt="Image" src="https://github.com/user-attachments/assets/a88661fb-4528-4e85-b68e-15b65fd34942" alt="App Banner" width="80%" />
 </p>
 
 **TerraDiff** is a cutting-edge web application for detecting and visualizing changes in satellite imagery over time. Effortlessly monitor structural, environmental, and geographical transformations with precision and style.
