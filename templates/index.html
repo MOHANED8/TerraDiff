@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Satellite Image Change Detection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="https://img.icons8.com/ios-filled/50/000000/satellite.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg, #181c24);
+            color: var(--fg, #e0e6ed);
+            font-family: 'Roboto', Arial, sans-serif;
+            transition: background 0.3s, color 0.3s;
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: linear-gradient(120deg, #232946 60%, #1a1a2e 100%);
+            box-shadow: 0 2px 16px 0 rgba(31, 38, 135, 0.17);
+            padding: 1.2rem 0 1rem 0;
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: slideDown 0.8s cubic-bezier(.77,0,.18,1) 0s 1;
+        }
+        .logo {
+            width: 40px; height: 40px; margin-bottom: -10px; margin-right: 10px;
+        }
+        .theme-toggle {
+            position: absolute; right: 2rem; top: 1.5rem;
+        }
+        .hero-desc {
+            font-size: 1.2rem;
+            color: var(--fg, #e0e6ed);
+            margin-top: 0.5rem;
+        }
+        .upload-card {
+            background: #232946;
+            border-radius: 1rem;
+            box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.17);
+            padding: 2rem 1.5rem;
+            margin-bottom: 2rem;
+            transition: box-shadow 0.3s;
+            animation: fadeIn 1s;
+        }
+        .upload-card:hover {
+            box-shadow: 0 8px 32px 0 rgba(67, 217, 173, 0.18);
+        }
+        .img-preview, .gallery-img {
+            max-width: 260px;
+            max-height: 180px;
+            border-radius: 0.5rem;
+            border: 2px solid #393e46;
+            margin: 8px 0;
+            background: #181c24;
+            opacity: 0;
+            animation: fadeIn 1.2s forwards;
+        }
+        .gallery-img {
+            max-width: 160px;
+            max-height: 100px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .gallery-img:hover {
+            transform: scale(1.08) rotate(-2deg);
+            box-shadow: 0 8px 32px 0 rgba(247, 202, 24, 0.18);
+        }
+        .form-label, .form-select, .btn, .alert {
+            font-size: 1.05rem;
+        }
+        .btn-primary {
+            background: #f7ca18;
+            color: #232946;
+            border: none;
+            font-weight: 600;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            background: #ffe066;
+            color: #232946;
+            box-shadow: 0 4px 16px 0 rgba(247, 202, 24, 0.18);
+        }
+        .btn-success {
+            background: #43d9ad;
+            border: none;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .btn-success:hover {
+            background: #2ec4a6;
+            box-shadow: 0 4px 16px 0 rgba(67, 217, 173, 0.18);
+        }
+        .btn-danger {
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .btn-danger:hover {
+            background: #e63946;
+            box-shadow: 0 4px 16px 0 rgba(230, 57, 70, 0.18);
+        }
+        .progress {
+            background: #232946;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #43d9ad 0%, #f7ca18 100%);
+            color: #232946;
+            transition: width 0.6s cubic-bezier(.77,0,.18,1);
+        }
+        .footer {
+            margin-top: 3rem;
+            padding: 1.5rem 0 0.5rem 0;
+            text-align: center;
+            color: #888;
+            font-size: 1rem;
+        }
+        .dropzone {
+            border: 2px dashed #43d9ad;
+            border-radius: 0.75rem;
+            background: #1a1a2e;
+            padding: 1.5rem;
+            text-align: center;
+            color: #43d9ad;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: background 0.2s, box-shadow 0.3s;
+            animation: fadeIn 1.2s;
+        }
+        .dropzone.dragover {
+            background: #232946;
+            box-shadow: 0 4px 16px 0 rgba(67, 217, 173, 0.18);
+        }
+        .custom-tooltip {
+            color: #f7ca18;
+            font-size: 0.95rem;
+        }
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1.2s forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-alert {
+            opacity: 0;
+            animation: fadeInAlert 1.2s forwards;
+        }
+        @keyframes fadeInAlert {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .spinner-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(24,28,36,0.7);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s;
+        }
+        .spinner-border {
+            width: 4rem; height: 4rem;
+            color: #f7ca18;
+        }
+        .comparison-slider {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.17);
+            background: #232946;
+            animation: fadeIn 1.2s;
+        }
+        .comparison-slider img {
+            width: 100%;
+            display: block;
+            border-radius: 1rem;
+        }
+        .slider-bar {
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 4px;
+            background: #f7ca18;
+            z-index: 2;
+            cursor: ew-resize;
+            transition: background 0.2s;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: -12px;
+            width: 28px;
+            height: 28px;
+            background: #f7ca18;
+            border-radius: 50%;
+            border: 2px solid #232946;
+            box-shadow: 0 2px 8px 0 rgba(247, 202, 24, 0.18);
+            transform: translateY(-50%);
+            z-index: 3;
+            cursor: ew-resize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .checkmark {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3000;
+            width: 120px; height: 120px;
+            background: rgba(67,217,173,0.95);
+            border-radius: 50%;
+            box-shadow: 0 4px 32px 0 rgba(67,217,173,0.18);
+            align-items: center;
+            justify-content: center;
+            animation: popIn 0.7s;
+        }
+        .checkmark svg {
+            width: 60px; height: 60px;
+            display: block;
+            margin: 30px auto;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.5) translate(-50%, -50%); opacity: 0; }
+            70% { transform: scale(1.1) translate(-50%, -50%); opacity: 1; }
+            100% { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #232946 25%, #393e46 50%, #232946 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 1rem;
+            min-height: 180px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .gallery-meta {
+            color: #aaa; font-size: 0.9rem; margin-top: 2px;
+        }
+        .batch-download {
+            margin-bottom: 1rem;
+        }
+        .threshold-slider {
+            width: 100%; max-width: 300px; margin: 0 auto 1rem auto;
+        }
+    </style>
+</head>
+<body>
+<div class="sticky-header">
+    <img src="https://img.icons8.com/ios-filled/50/000000/satellite.png" class="logo" alt="Logo">
+    <span class="hero-title" style="font-family:'Montserrat',sans-serif;font-size:2.1rem;font-weight:700;color:#f7ca18;letter-spacing:2px;">Satellite Image Change Detection</span>
+    <button class="btn btn-outline-light theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">🌙</button>
+    <button class="btn btn-outline-info ms-2" data-bs-toggle="modal" data-bs-target="#infoModal" aria-label="How it works">?</button>
+    <div class="hero-desc">Upload two satellite images taken at different times to detect and visualize significant changes.<br>Powered by AI and advanced image processing.</div>
+</div>
+<div class="container py-4">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-danger shadow fade-alert">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+    <div class="upload-card mx-auto" style="max-width: 600px;">
+        <form method="post" enctype="multipart/form-data" class="mb-4" id="compareForm">
+            <div class="dropzone" id="dropzone" aria-label="Image upload dropzone">
+                <span id="dropzone-text">Drag & drop images here or click to select files</span>
+                <input type="file" name="image1" id="image1" class="form-control d-none" accept="image/*" required aria-label="Upload first satellite image">
+                <input type="file" name="image2" id="image2" class="form-control d-none" accept="image/*" required aria-label="Upload second satellite image">
+            </div>
+            <div class="row mb-3">
+                <div class="col text-center">
+                    <img id="preview1" class="img-preview fade-in" src="#" alt="Preview of first uploaded image" style="display:none;"/>
+                </div>
+                <div class="col text-center">
+                    <img id="preview2" class="img-preview fade-in" src="#" alt="Preview of second uploaded image" style="display:none;"/>
+                </div>
+            </div>
+            <div class="mb-3 threshold-slider">
+                <label for="threshold" class="form-label">Change Detection Sensitivity</label>
+                <input type="range" min="10" max="100" value="30" class="form-range" id="threshold" name="threshold" aria-label="Change detection threshold">
+                <span id="thresholdValue">30</span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100" aria-label="Compare images">Compare</button>
+            <div class="progress mt-3 fade-in" style="height: 20px; display:none;" id="progressBar" aria-label="Processing progress bar">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%">Processing...</div>
+            </div>
+        </form>
+    </div>
+    <div id="skeletonLoader" class="skeleton" style="display:none;"></div>
+    {% if result_img %}
+    <div class="comparison-slider fade-in" id="comparisonSlider">
+        <img src="{{ result_img }}" id="afterImg" alt="Detected differences result image" aria-label="Detected differences result image">
+        <img src="{{ request.form.get('image1_url', '') }}" id="beforeImg" style="position:absolute;top:0;left:0;clip-path:inset(0 50% 0 0);" alt="Original image" aria-label="Original image">
+        <div class="slider-bar" id="sliderBar" style="left:50%"></div>
+        <div class="slider-handle" id="sliderHandle" style="left:50%">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#fff"/><path d="M8 12h8" stroke="#232946" stroke-width="2"/></svg>
+        </div>
+    </div>
+    <div class="row mb-4 justify-content-center fade-in" id="resultSection">
+        <div class="col-md-8 text-center">
+            <h5 class="mb-3" style="color:#43d9ad;">Detected Differences</h5>
+            <img src="{{ result_img }}" alt="Detected differences result image" class="img-fluid border rounded shadow fade-in" aria-label="Detected differences result image">
+            <a href="{{ result_img.replace('/results/', '/download/') }}" class="btn btn-success mt-3 fade-in" aria-label="Download result image">Download Result</a>
+        </div>
+    </div>
+    <div class="checkmark" id="checkmarkAnim">
+        <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="none" stroke="#fff" stroke-width="4"/><path d="M14 27l7 7 17-17" fill="none" stroke="#fff" stroke-width="4"/></svg>
+    </div>
+    {% endif %}
+    {% if gallery_imgs %}
+    <div class="batch-download text-end">
+        <button class="btn btn-outline-warning btn-sm" id="batchDownloadBtn" aria-label="Download all results">Download All Results</button>
+    </div>
+    <div class="mb-4 fade-in" id="gallerySection">
+        <h5 class="mb-3" style="color:#f7ca18;">Results Gallery</h5>
+        <div class="d-flex flex-wrap justify-content-center">
+            {% for img in gallery_imgs %}
+                <div class="text-center mx-2 mb-3 fade-in gallery-item">
+                    <img src="{{ img }}" class="gallery-img shadow" alt="Gallery result image" aria-label="Gallery result image">
+                    <div class="gallery-meta">{{ img.split('result_')[-1].split('.')[0][:8] }}</div>
+                    <a href="{{ img.replace('/results/', '/download/') }}" class="btn btn-link btn-sm text-warning" aria-label="Download gallery result image">Download</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    <form method="post" action="/delete_all" onsubmit="return confirm('Are you sure you want to delete all uploaded and result images? This cannot be undone.');">
+        <button type="submit" class="btn btn-danger w-100 mb-4 fade-in" style="font-weight:600;" aria-label="Delete all data">Delete All Data</button>
+    </form>
+    <div class="footer fade-in">
+        &copy; {{ 2024 }} Satellite Change Detection &mdash; Designed for comfort and clarity.
+    </div>
+</div>
+<div id="spinnerOverlay" class="spinner-overlay" style="display:none;">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Processing...</span>
+    </div>
+</div>
+<!-- Info Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">How it works</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li>Upload two satellite images of the same area, taken at different times.</li>
+          <li>Select the detection method and adjust sensitivity if needed.</li>
+          <li>Click Compare to detect and visualize changes.</li>
+          <li>View, download, or batch download results in the gallery.</li>
+          <li>Use the Delete All Data button to clear all uploads and results.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Theme toggle
+const themeToggle = document.getElementById('themeToggle');
+let darkMode = true;
+function setTheme(dark) {
+    document.body.style.setProperty('--bg', dark ? '#181c24' : '#f7f7f7');
+    document.body.style.setProperty('--fg', dark ? '#e0e6ed' : '#232946');
+    themeToggle.textContent = dark ? '🌙' : '☀️';
+}
+themeToggle.addEventListener('click', function() {
+    darkMode = !darkMode;
+    setTheme(darkMode);
+});
+setTheme(true);
+
+// Drag-and-drop upload logic
+const dropzone = document.getElementById('dropzone');
+const image1 = document.getElementById('image1');
+const image2 = document.getElementById('image2');
+let files = [];
+
+function updateDropzoneText() {
+    if (files.length === 0) {
+        document.getElementById('dropzone-text').textContent = 'Drag & drop images here or click to select files';
+    } else if (files.length === 1) {
+        document.getElementById('dropzone-text').textContent = '1 image selected. Drop another or click to select.';
+    } else {
+        document.getElementById('dropzone-text').textContent = '2 images selected.';
+    }
+}
+
+// Click to open file dialog
+ dropzone.addEventListener('click', function() {
+    if (files.length === 0) {
+        image1.click();
+    } else if (files.length === 1) {
+        image2.click();
+    }
+});
+
+// Handle file input changes
+image1.addEventListener('change', function(e) {
+    files[0] = e.target.files[0];
+    previewImage(files[0], 'preview1');
+    updateDropzoneText();
+});
+image2.addEventListener('change', function(e) {
+    files[1] = e.target.files[0];
+    previewImage(files[1], 'preview2');
+    updateDropzoneText();
+});
+
+// Drag-and-drop events
+['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, e => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    });
+});
+['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, e => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+    });
+});
+dropzone.addEventListener('drop', function(e) {
+    let droppedFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    if (droppedFiles.length > 0) {
+        if (files.length === 0) {
+            image1.files = createFileList([droppedFiles[0]]);
+            files[0] = droppedFiles[0];
+            previewImage(files[0], 'preview1');
+        } else if (files.length === 1) {
+            image2.files = createFileList([droppedFiles[0]]);
+            files[1] = droppedFiles[0];
+            previewImage(files[1], 'preview2');
+        }
+        updateDropzoneText();
+    }
+});
+function createFileList(files) {
+    const dataTransfer = new DataTransfer();
+    files.forEach(file => dataTransfer.items.add(file));
+    return dataTransfer.files;
+}
+
+function previewImage(file, id) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+        var output = document.getElementById(id);
+        output.src = reader.result;
+        output.style.display = 'block';
+        output.classList.add('fade-in');
+    };
+    reader.readAsDataURL(file);
+}
+
+// Show progress bar and spinner on form submit
+const form = document.getElementById('compareForm');
+form.addEventListener('submit', function() {
+    document.getElementById('progressBar').style.display = 'block';
+    document.getElementById('spinnerOverlay').style.display = 'flex';
+    document.getElementById('skeletonLoader').style.display = 'block';
+});
+
+// Hide spinner after page load
+window.addEventListener('pageshow', function() {
+    document.getElementById('spinnerOverlay').style.display = 'none';
+    document.getElementById('skeletonLoader').style.display = 'none';
+});
+
+// Animate alerts
+window.addEventListener('DOMContentLoaded', function() {
+    let alerts = document.querySelectorAll('.fade-alert');
+    alerts.forEach(function(alert) {
+        alert.classList.add('show');
+    });
+});
+
+// Animate gallery and result section
+window.addEventListener('DOMContentLoaded', function() {
+    let gallery = document.getElementById('gallerySection');
+    let result = document.getElementById('resultSection');
+    if (gallery) gallery.classList.add('fade-in');
+    if (result) result.classList.add('fade-in');
+});
+
+// Enable Bootstrap tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+
+// Comparison slider logic
+window.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('comparisonSlider');
+    if (!slider) return;
+    const beforeImg = document.getElementById('beforeImg');
+    const afterImg = document.getElementById('afterImg');
+    const sliderBar = document.getElementById('sliderBar');
+    const sliderHandle = document.getElementById('sliderHandle');
+    let dragging = false;
+    sliderHandle.addEventListener('mousedown', function(e) { dragging = true; });
+    document.addEventListener('mouseup', function(e) { dragging = false; });
+    document.addEventListener('mousemove', function(e) {
+        if (!dragging) return;
+        let rect = slider.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        x = Math.max(0, Math.min(x, rect.width));
+        let percent = x / rect.width * 100;
+        beforeImg.style.clipPath = `inset(0 ${100-percent}% 0 0)`;
+        sliderBar.style.left = percent + '%';
+        sliderHandle.style.left = percent + '%';
+    });
+});
+
+// Animated checkmark on success
+window.addEventListener('DOMContentLoaded', function() {
+    const checkmark = document.getElementById('checkmarkAnim');
+    if (checkmark && document.getElementById('resultSection')) {
+        checkmark.style.display = 'flex';
+        setTimeout(() => { checkmark.style.display = 'none'; }, 1200);
+    }
+});
+
+// Batch download
+const batchBtn = document.getElementById('batchDownloadBtn');
+if (batchBtn) {
+    batchBtn.addEventListener('click', function() {
+        document.querySelectorAll('#gallerySection .gallery-item a[aria-label="Download gallery result image"]').forEach(a => {
+            window.open(a.href, '_blank');
+        });
+    });
+}
+
+// Threshold slider live update
+const thresholdSlider = document.getElementById('threshold');
+const thresholdValue = document.getElementById('thresholdValue');
+if (thresholdSlider && thresholdValue) {
+    thresholdSlider.addEventListener('input', function() {
+        thresholdValue.textContent = thresholdSlider.value;
+    });
+}
+</script>
+</body>
+</html> 
